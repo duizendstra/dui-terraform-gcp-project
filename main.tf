@@ -43,6 +43,17 @@ resource "google_service_account" "service_accounts" {
   depends_on = [google_project.project]
 }
 
+resource "google_project_service_identity" "service_agent" {
+  provider = google-beta
+  project  = google_project.project.project_id
+
+  for_each = { for service in var.project_services : service.service => service if service.create_service_agent }
+
+  service = each.value.service
+
+  depends_on = [google_project.project]
+}
+
 resource "google_service_usage_consumer_quota_override" "overrides" {
   for_each       = { for override in var.consumer_quota_overrides : "${override.service}-${override.metric}-${override.limit}" => override }
   project        = var.project_id

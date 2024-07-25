@@ -24,6 +24,7 @@ variable "project_services" {
     service                     = string
     disable_on_destroy          = optional(bool, false)
     create_service_account      = optional(bool, false)
+    create_service_agent        = optional(bool, false)
     service_account_id          = optional(string)
     service_account_description = optional(string)
   }))
