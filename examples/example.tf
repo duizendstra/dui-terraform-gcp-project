@@ -2,11 +2,11 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 5.38.0"
+      version = ">= 5.40.0"
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 5.38.0"
+      version = ">= 5.40.0"
     }
   }
 }
@@ -29,6 +29,9 @@ module "project" {
       service = "artifactregistry.googleapis.com"
     },
     {
+      service = "bigquery.googleapis.com"
+    },
+    {
       service                     = "cloudbuild.googleapis.com"
       create_service_account      = true
       service_account_id          = "cloudbuild-sa"
@@ -44,3 +47,9 @@ module "project" {
     },
   ]
 }
+
+output "project" {
+  description = "The combined details of the GCP project"
+  value       = module.project.project
+}
+
