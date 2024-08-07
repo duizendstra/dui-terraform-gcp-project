@@ -56,7 +56,7 @@ resource "google_project_service_identity" "service_agent" {
 
 resource "google_service_usage_consumer_quota_override" "overrides" {
   for_each       = { for override in var.consumer_quota_overrides : "${override.service}-${override.metric}-${override.limit}" => override }
-  project        = var.project_id
+  project        = google_project.project.project_id
   service        = each.value.service
   metric         = urlencode(each.value.metric)
   limit          = urlencode(each.value.limit)
