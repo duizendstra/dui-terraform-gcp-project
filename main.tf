@@ -2,11 +2,11 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 5.38.0"
+      version = ">= 5.40.0"
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 5.38.0"
+      version = ">= 5.40.0"
     }
   }
 }
@@ -24,7 +24,7 @@ resource "google_project" "project" {
 
 resource "google_project_service" "project_services" {
   project  = google_project.project.project_id
-  for_each = { for service in var.project_services : service.service => service }
+  for_each = { for service in var.services : service.service => service }
 
   service            = each.key
   disable_on_destroy = each.value.disable_on_destroy
@@ -35,19 +35,19 @@ resource "google_project_service" "project_services" {
 resource "google_service_account" "service_accounts" {
   project = google_project.project.project_id
 
-  for_each = { for service in var.project_services : service.service => service if service.create_service_account }
+  for_each = { for service_account in var.service_accounts : service_account.account_id => service_account }
 
-  account_id   = each.value.service_account_id
-  display_name = each.value.service_account_description
+  account_id   = each.value.account_id
+  display_name = each.value.description
 
   depends_on = [google_project.project]
 }
 
-resource "google_project_service_identity" "service_agent" {
+resource "google_project_service_identity" "service_agents" {
   provider = google-beta
   project  = google_project.project.project_id
 
-  for_each = { for service in var.project_services : service.service => service if service.create_service_agent }
+  for_each = { for service_agent in var.service_agents : service_agent.account_id => service_agent }
 
   service = each.value.service
 
