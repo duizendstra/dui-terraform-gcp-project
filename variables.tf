@@ -1,10 +1,10 @@
 variable "project_id" {
-  description = "The ID for the GCP project. It must be between 6 and 30 characters (including the suffix), can contain lowercase letters, digits, and hyphens, must start with a letter, and cannot end with a hyphen."
+  description = "The ID for the GCP project. It must be between 6 and 30 characters, can contain lowercase letters, digits, and hyphens, must start with a letter, and cannot end with a hyphen."
   type        = string
 
   validation {
-    condition     = length(var.project_id) >= 2 && length(var.project_id) <= 26 && can(regex("^[a-z][a-z0-9-]*[a-z0-9]$", var.project_id))
-    error_message = "The project ID must be between 6 and 30 characters, including the suffix, and can only contain lowercase letters, digits, and hyphens. It must start with a letter and cannot end with a hyphen."
+    condition     = length(var.project_id) >= 6 && length(var.project_id) <= 30 && can(regex("^[a-z][a-z0-9-]*[a-z0-9]$", var.project_id))
+    error_message = "The project ID must be between 6 and 30 characters and can only contain lowercase letters, digits, and hyphens. It must start with a letter and cannot end with a hyphen."
   }
 }
 
@@ -92,13 +92,7 @@ variable "consumer_quota_overrides" {
   default = []
 
   validation {
-    condition = alltrue([
-      for i in range(length(var.consumer_quota_overrides)) : length([
-        for j in range(i + 1, length(var.consumer_quota_overrides)) : true
-        if var.consumer_quota_overrides[i].service == var.consumer_quota_overrides[j].service &&
-        var.consumer_quota_overrides[i].metric == var.consumer_quota_overrides[j].metric
-      ]) == 0
-    ])
+    condition     = length(distinct([for o in var.consumer_quota_overrides : "${o.service}-${o.metric}"])) == length(var.consumer_quota_overrides)
     error_message = "Duplicate entries found in consumer_quota_overrides. Each combination of service and metric must be unique."
   }
 }
