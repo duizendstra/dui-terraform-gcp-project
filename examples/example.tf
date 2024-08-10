@@ -12,13 +12,13 @@ terraform {
 }
 
 module "project" {
-  source = "./.."
+  source = "./.." # Adjust the path according to your directory structure
 
   billing_account = "your-billing-account-id"
   folder_id       = "your-folder-id"
   project_id      = "your-project-id"
   project_name    = "your-project-name"
-  project_services = [
+  services = [
     {
       service = "logging.googleapis.com"
     },
@@ -32,12 +32,20 @@ module "project" {
       service = "bigquery.googleapis.com"
     },
     {
-      service                     = "cloudbuild.googleapis.com"
-      create_service_account      = true
-      service_account_id          = "cloudbuild-sa"
-      service_account_description = "Cloud Build"
+      service = "cloudbuild.googleapis.com"
     }
   ]
+
+  service_accounts = [{
+    account_id  = "sa1"
+    description = "your-service-account-description"
+  }]
+
+  service_agents = [{
+    account_id = "sa2"
+    service    = "dataform.googleapis.com"
+  }]
+
   consumer_quota_overrides = [
     {
       service        = "bigquery.googleapis.com"
@@ -52,4 +60,3 @@ output "project" {
   description = "The combined details of the GCP project"
   value       = module.project.project
 }
-
